@@ -42,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        arFragment = (CustomARFragment)
+        arFragment = (CustomARFragment) getSupportFragmentManager().findFragmentById(R.id.sceneform_fragment);
+        assert arFragment != null;
+        arFragment.getPlaneDiscoveryController().hide();
+
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdateFrame);
     }
 
@@ -134,18 +137,18 @@ public class MainActivity extends AppCompatActivity {
         for (AugmentedImage augmentedImage : augmentedImages) {
             if (augmentedImage.getTrackingState() == TrackingState.TRACKING) {
                 if (augmentedImage.getName().equals("earth") && shouldAddModel) {
-                    placeObject(arFragment, augmentedImage.createAnchor(augmentedImage.getCenterPose()), Uri.parse("Mesh_BengalTiger.sfb"));
+                    placeObject(arFragment, augmentedImage.createAnchor(augmentedImage.getCenterPose()));
                     shouldAddModel = false;
                 }
             }
         }
     }
 
-    private void placeObject(ArFragment arFragment, Anchor anchor, Uri uri) {
+    private void placeObject(ArFragment arFragment, Anchor anchor) {
         ViewRenderable.builder()
-                .setSource(arFragment.getContext(), uri)
+                .setView(this,R.layout.textviewlayout)
                 .build()
-                .thenAccept(modelRenderable -> addNodeToScene(arFragment, anchor, modelRenderable))
+                .thenAccept(modelRenderable -> addNodeToScene(arFragment, anchor, modelRenderable));
 
     }
 
